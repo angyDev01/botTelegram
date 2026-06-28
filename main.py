@@ -7,6 +7,8 @@ load_dotenv()
 
 token = os.getenv('TOKEN_BOT')
 
+#
+
 async def start(update, context):
     await update.message.reply_text("""
 👋 Bienvenue sur DailyPub ! 🐍
@@ -33,6 +35,7 @@ Voici les commandes que tu peux utiliser pour interagir avec moi :
 Tape une de ces commandes pour commencer ! 🚀
     """)
 
+#
 
 async def help(update, context):
     await update.message.reply_text("""

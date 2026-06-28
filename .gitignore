@@ -7,7 +7,7 @@ ENV/
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
+*.pyds
 
 # Fichiers de configuration / Secrets (si tu utilises un fichier .env)
 .env
