@@ -10,7 +10,7 @@ __pycache__/
 *.pyds
 
 # Fichiers de configuration / Secrets (si tu utilises un fichier .env)
-.env
+*.env
 
 # Fichiers système Windows
 Thumbs.db
