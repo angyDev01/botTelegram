@@ -1,0 +1,18 @@
+# Environnement virtuel (NE JAMAIS ENVOYER SUR GITHUB)
+env/
+venv/
+ENV/
+
+# Fichiers de cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de configuration / Secrets (si tu utilises un fichier .env)
+.env
+
+# Fichiers système Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
