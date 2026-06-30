@@ -40,7 +40,7 @@ Tape une de ces commandes pour commencer ! 🚀
 
 async def help(update, context):
     keyboard = [
-        [InlineKeyboardButton("Contactez mon developpeur", url="https://t.me/Angy_Dev")],
+        [InlineKeyboardButton("Contactez mon developpeur", url="https://t.me/@Angy_Dev")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
