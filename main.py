@@ -63,8 +63,6 @@ Si tu rencontres un bug ou que tu as une idée de tutoriel à proposer, n'hésit
 
 #Developpement de la commande /about
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
 async def about(update, context):
     text = """
 🤖 **À propos de DailyPub**
@@ -95,6 +93,7 @@ if __name__ == '__main__':
     # 2. ajout des commandes (ici, on relie la commande /start à ta fonction start)
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help))
+    application.add_handler(CommandHandler("about", about))
     # 3. Je lance le bot en mode "écoute continue"
     print("🤖 Démarrage de DailyPub...")
     application.run_polling()
