@@ -129,6 +129,7 @@ def main():
     application.add_handler(CommandHandler("start", start)) #commande /start
     application.add_handler(CommandHandler("help", help))   #commande /help
     application.add_handler(CommandHandler("about", about)) #commande /about
+    application.add_handler(CommandHandler("daily", daily_post)) #commande /daily
 
     # 3. Je lance le bot en mode "écoute continue"
     print("🤖 Démarrage de DailyPub...")
