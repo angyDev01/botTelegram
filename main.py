@@ -39,6 +39,11 @@ Tape une de ces commandes pour commencer ! 🚀
 #developpement de la commande d'aide
 
 async def help(update, context):
+    keyboard = [
+        [InlineKeyboardButton("Contactez mon developpeur", url="https://te.me/Angy_Dev")],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
     await update.message.reply_text("""
 🆘 **Centre d'aide DailyPub** 🐍
 
@@ -57,8 +62,8 @@ Je publie automatiquement des astuces et des tutoriels sur le canal principal. M
 • /about : Affiche les infos du bot et la politique de confidentialité.
 
 👨‍💻 **Un problème ou une suggestion ?**
-Si tu rencontres un bug ou que tu as une idée de tutoriel à proposer, n'hésite pas à contacter mon créateur :@Angy_Dev.
-    """)
+Si tu rencontres un bug ou que tu as une idée de tutoriel à proposer, n'hésite pas à contacter mon créateur.
+    """, reply_markup=reply_markup, parse_mode="Markdown")
 
 
 #Developpement de la commande /about
