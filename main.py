@@ -145,10 +145,6 @@ LIKES_FILE = os.path.join(DATA_DIR, 'likes.json')
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
-# Récupération de l'ID du canal depuis les variables d'environnement
-CHANNEL_ID = os.getenv("CHANNEL_ID")
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-
 # --- Fonctions de gestion des Likes ---
 
 def load_likes():
