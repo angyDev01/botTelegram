@@ -1,10 +1,9 @@
 #Création de bot telegrame
 import os 
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 import datetime
-import logging
 import random
 import json
 
@@ -99,28 +98,99 @@ Clique sur le bouton ci-dessous pour voir le code source sur GitHub :
 
 
 #commande pour envoyer la publication quotidienne
-async def daily_post(context):
-    # 1. Charger les données
-    with open('data.json', 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+
+
+async def daily(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # 1. Charger les données du fichier JSON
+    try:
+        with open('data.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        await update.message.reply_text("Erreur : Le fichier data.json est introuvable.")
+        return
+
     # 2. Choisir une astuce au hasard
     post = random.choice(data)
     
-    # 3. Créer les boutons
+    # 3. Créer les boutons interactifs
     keyboard = [
-        [InlineKeyboardButton("🔗 Lire la suite", url=post['url'])],
+        [InlineKeyboardButton("🔗 Lire la source", url=post['url'])],
         [InlineKeyboardButton("👍 J'aime", callback_data='like')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # 4. Envoyer sur la chaîne (remplace @ton_canal par ton ID ou username)
-    await context.bot.send_message(
-        chat_id=chat_id, #le chat_id de ton canal ou groupe
-        text=f"💡 **{post['title']}**\n\n{post['content']}",
-        reply_markup=reply_markup,
+    # 4. Envoyer sur la chaîne configurée
+    try:
+        # On utilise ton CHANNEL_ID configuré dans main()
+        await context.bot.send_message(
+            chat_id=chat_id, 
+            text=f"💡 **{post['title']}**\n\n{post['content']}",
+            reply_markup=reply_markup,
+            parse_mode="Markdown"
+        )
+        # Confirmation à l'utilisateur qui a tapé la commande
+        await update.message.reply_text("✅ Publication envoyée avec succès sur la chaîne !")
+    except Exception as e:
+        await update.message.reply_text(f"❌ Erreur lors de l'envoi : {e}")
+
+
+#script pour gérer le clic sur le bouton "J'aime"
+
+# Configuration des chemins pour le stockage persistant
+DATA_DIR = '/app/data'
+LIKES_FILE = os.path.join(DATA_DIR, 'likes.json')
+
+# S'assurer que le dossier de stockage existe
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+
+# Récupération de l'ID du canal depuis les variables d'environnement
+CHANNEL_ID = os.getenv("CHANNEL_ID")
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+# --- Fonctions de gestion des Likes ---
+
+def load_likes():
+    """Charge les likes depuis le fichier JSON persistant."""
+    if not os.path.exists(LIKES_FILE):
+        return {}
+    with open(LIKES_FILE, 'r', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+def save_likes(data):
+    """Sauvegarde les likes dans le fichier JSON."""
+    with open(LIKES_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=4)
+
+
+async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Gère le clic sur le bouton 'J'aime'."""
+    query = update.callback_query
+    await query.answer()
+
+    message_id = str(query.message.message_id)
+    likes_data = load_likes()
+    
+    # Incrémentation
+    likes_data[message_id] = likes_data.get(message_id, 0) + 1
+    save_likes(likes_data)
+    
+    count = likes_data[message_id]
+    
+    # Mise à jour du message
+    original_text = query.message.text.split("\n\n❤️")[0]
+    new_text = f"{original_text}\n\n❤️ {count} personne{'s' if count > 1 else ''} a/ont aimé cette astuce !"
+    
+    await query.edit_message_text(
+        text=new_text, 
+        reply_markup=query.message.reply_markup,
         parse_mode="Markdown"
     )
+
 
 #Script pour envoyer la publication quotidienne à 09h00 chaque jour
 def main():
@@ -131,14 +201,15 @@ def main():
     application.add_handler(CommandHandler("start", start)) #commande /start
     application.add_handler(CommandHandler("help", help))   #commande /help
     application.add_handler(CommandHandler("about", about)) #commande /about
-    application.add_handler(CommandHandler("daily", daily_post)) #commande /daily
+    application.add_handler(CommandHandler("daily", daily)) #commande /daily
+    application.add_handler(CallbackQueryHandler(button_click)) #gestion du clic sur le bouton "J'aime"
 
     # 3. Je lance le bot en mode "écoute continue"
     print("🤖 Démarrage de DailyPub...")
     
     # Programmer la publication à 09h00 chaque jour
     job_queue = application.job_queue
-    job_queue.run_daily(daily_post, time=datetime.time(hour=3, minute=50))
+    job_queue.run_daily(daily, time=datetime.time(hour=3, minute=50))
     
     application.run_polling()
 
