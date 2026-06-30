@@ -135,7 +135,7 @@ def main():
     
     # Programmer la publication à 09h00 chaque jour
     job_queue = application.job_queue
-    job_queue.run_daily(daily_post, time=datetime.time(hour=3, minute=40))
+    job_queue.run_daily(daily_post, time=datetime.time(hour=3, minute=50))
     
     application.run_polling()
 
