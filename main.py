@@ -3,6 +3,10 @@ import os
 from dotenv import load_dotenv
 from telegram.ext import Application, CommandHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+import datetime
+import logging
+import random
+import json
 
 load_dotenv()
 
@@ -76,6 +80,7 @@ Ce bot Telegram a été conçu pour t'accompagner dans ton apprentissage de la p
 
 🔹 **Technologie :** Python & python-telegram-bot.
 🔹 **Hébergement :** Railway.
+🔹 **Version :** v1.2
 
 Clique sur le bouton ci-dessous pour voir le code source sur GitHub :
     """
@@ -90,15 +95,51 @@ Clique sur le bouton ci-dessous pour voir le code source sur GitHub :
     await update.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
 
 
-# --- Le bloc principal pour démarrer le bot ---
-if __name__ == '__main__':
+
+#commande pour envoyer la publication quotidienne
+async def daily_post(context):
+    # 1. Charger les données
+    with open('data.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    # 2. Choisir une astuce au hasard
+    post = random.choice(data)
+    
+    # 3. Créer les boutons
+    keyboard = [
+        [InlineKeyboardButton("🔗 Lire la suite", url=post['url'])],
+        [InlineKeyboardButton("👍 J'aime", callback_data='like')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # 4. Envoyer sur la chaîne (remplace @ton_canal par ton ID ou username)
+    await context.bot.send_message(
+        chat_id="@ton_canal", 
+        text=f"💡 **{post['title']}**\n\n{post['content']}",
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+    )
+
+#Script pour envoyer la publication quotidienne à 09h00 chaque jour
+def main():
     # 1. Je crées l'application avec mon token donné par BotFather
     application = Application.builder().token(token).build()
 
     # 2. ajout des commandes (ici, on relie la commande /start à ta fonction start)
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help))
-    application.add_handler(CommandHandler("about", about))
+    application.add_handler(CommandHandler("start", start)) #commande /start
+    application.add_handler(CommandHandler("help", help))   #commande /help
+    application.add_handler(CommandHandler("about", about)) #commande /about
+
     # 3. Je lance le bot en mode "écoute continue"
     print("🤖 Démarrage de DailyPub...")
+    
+    # Programmer la publication à 09h00 chaque jour
+    job_queue = application.job_queue
+    job_queue.run_daily(daily_post, time=datetime.time(hour=3, minute=40))
+    
+    application.run_polling()
+
+# --- Le bloc principal pour démarrer le bot ---
+if __name__ == '__main__':
+    
     application.run_polling()

@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Les f-strings en Python",
+    "content": "Les f-strings sont le moyen le plus rapide et lisible de formater tes chaînes de caractères depuis Python 3.6+.",
+    "url": "https://docs.python.org/3/tutorial/inputoutput.html"
+  },
+  {
+    "title": "Comprendre les décorateurs",
+    "content": "Un décorateur est une fonction qui prend une autre fonction pour étendre son comportement sans la modifier.",
+    "url": "https://realpython.com/primer-on-python-decorators/"
+  }
+]
