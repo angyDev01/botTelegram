@@ -2,6 +2,7 @@
 import os 
 from dotenv import load_dotenv
 from telegram.ext import Application, CommandHandler
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 load_dotenv()
 
@@ -35,7 +36,7 @@ Voici les commandes que tu peux utiliser pour interagir avec moi :
 Tape une de ces commandes pour commencer ! 🚀
     """)
 
-#
+#developpement de la commande d'aide
 
 async def help(update, context):
     await update.message.reply_text("""
@@ -60,15 +61,40 @@ Si tu rencontres un bug ou que tu as une idée de tutoriel à proposer, n'hésit
     """)
 
 
+#Developpement de la commande /about
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+async def about(update, context):
+    text = """
+🤖 **À propos de DailyPub**
+
+Ce bot Telegram a été conçu pour t'accompagner dans ton apprentissage de la programmation Python.
+
+🔹 **Technologie :** Python & python-telegram-bot.
+🔹 **Hébergement :** Railway.
+
+Clique sur le bouton ci-dessous pour voir le code source sur GitHub :
+    """
+    
+    # Création du bouton
+    keyboard = [
+        [InlineKeyboardButton("Voir le code sur GitHub 📂", url="https://github.com/angyDev01/botTelegram")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # Envoi du message avec le bouton
+    await update.message.reply_text(text, reply_markup=reply_markup, parse_mode="Markdown")
+
 
 # --- Le bloc principal pour démarrer le bot ---
 if __name__ == '__main__':
     # 1. Je crées l'application avec mon token donné par BotFather
     application = Application.builder().token(token).build()
 
-    # 2. Tu ajoutes tes commandes (ici, on relie la commande /start à ta fonction start)
+    # 2. ajout des commandes (ici, on relie la commande /start à ta fonction start)
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help))
-    # 3. Tu lances le bot en mode "écoute continue"
+    # 3. Je lance le bot en mode "écoute continue"
     print("🤖 Démarrage de DailyPub...")
     application.run_polling()
