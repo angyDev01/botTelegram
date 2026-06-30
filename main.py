@@ -11,14 +11,16 @@ import json
 load_dotenv()
 
 token = os.getenv('TOKEN_BOT')
+chat_id = int(os.getenv('CHANNEL_ID'))
 
 #
 
 async def start(update, context):
-    await update.message.reply_text("""
+    user = update.message.from_user
+    await update.message.reply_text(f"""
 👋 Bienvenue sur DailyPub ! 🐍
-
-Je suis ton assistant automatisé dédié à l'univers Python. Chaque jour, je diffuse des astuces, des tutoriels et des snippets pour t'aider à mieux coder.
+    {user.first_name}, je suis ton assistant automatisé dédié à l'univers Python.
+    Chaque jour, je diffuse des astuces, des tutoriels et des snippets pour t'aider à mieux coder.
 
 Voici les commandes que tu peux utiliser pour interagir avec moi :
 
@@ -114,7 +116,7 @@ async def daily_post(context):
     
     # 4. Envoyer sur la chaîne (remplace @ton_canal par ton ID ou username)
     await context.bot.send_message(
-        chat_id="@ton_canal", 
+        chat_id=chat_id, #le chat_id de ton canal ou groupe
         text=f"💡 **{post['title']}**\n\n{post['content']}",
         reply_markup=reply_markup,
         parse_mode="Markdown"
