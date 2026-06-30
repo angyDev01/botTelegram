@@ -141,5 +141,4 @@ def main():
 
 # --- Le bloc principal pour démarrer le bot ---
 if __name__ == '__main__':
-    
-    application.run_polling()
+    main()
